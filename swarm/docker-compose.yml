@@ -1,0 +1,76 @@
+version: '3.8'
+services:
+  studnet-frontend:
+    image: zcha1307/studnet-frontend:1.2.2
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+    ports:
+      - "3000:80"
+    networks:
+      - studnet-network
+    labels:
+      - "traefik.http.routers.frontend.rule=Host:frontend.local"
+  studnet-backend:
+    image: zcha1307/studnet-backend:1.2.4
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+    ports :
+      - "8080:8080"
+    networks:
+      - studnet-network
+    labels:
+      - "traefik.http.routers.backend.rule=Host:backend.local"
+  MySQL-database:
+    image: mysql:9.1.0-oracle
+    environment:
+      MYSQL_ROOT_PASSWORD: p@ssw@rdr@@t
+      MYSQL_DATABASE: exdb
+      MYSQL_USER: tester
+      MYSQL_PASSWORD: t@st@r2@
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+    ports:
+      - "3306:3306" 
+    volumes:
+      - storageVol:/var/lib/mysql
+    networks:
+      - studnet-network
+    labels:
+      - "traefik.http.routers.database.rule=Host:database.local" 
+  traefik:
+    image: traefik:v2.9
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "5050:8080" 
+      - "80:80"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - studnet-network
+volumes:
+  storageVol:
+
+networks:
+  studnet-network:
+    driver: overlay
