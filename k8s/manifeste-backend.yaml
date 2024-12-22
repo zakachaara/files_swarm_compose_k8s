@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: Service
+metdata:
+  name: backend-service
+  namespace: exam
+spec:
+  type: ClusterIP
+  selector:
+    app : backend
+  ports:
+    - protocol : TCP
+      port : 8080
+      targetPort: 8080
+
+---
+apiVersion : v1
+kind : ConfigMap
+metadata :
+  name: backend-config
+  namespace: exam
+data:
+  SPRING_DATASOURCE_URL : jdbc:mysql://MySQL-database:3306/exdb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+  SPRING_DATASOURCE_USERNAME: tester
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+  namespace: exam
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: studnet-backend
+        image: zcha1307/studnet-backend:1.2.4
+        ports:
+        - containerPort: 8080
+        env:
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: db-secret
+                key: mysql-user-password
+          - name: SPRING_DATASOURCE_URL
+            valueFrom:
+              configMapKeyRef:
+                name: backend-config
+                key: SPRING_DATASOURCE_URL
+          - name: SPRING_DATASOURCE_USERNAME
+            valueFrom:
+              configMapKeyRef:
+                name: backend-config
+                key: SPRING_DATASOURCE_USERNAME

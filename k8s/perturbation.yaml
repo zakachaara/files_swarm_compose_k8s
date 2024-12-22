@@ -1,0 +1,34 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name : db-PDB
+  namespace: exam
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: mysql
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name : backend-PDB
+  namespace: exam
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: backend
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name : frontend-PDB
+  namespace: exam
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: frontend
