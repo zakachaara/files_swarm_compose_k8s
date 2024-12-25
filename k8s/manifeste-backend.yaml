@@ -1,15 +1,15 @@
+
 apiVersion: v1
 kind: Service
-metdata:
+metadata:
   name: backend-service
   namespace: exam
 spec:
-  type: ClusterIP
   selector:
-    app : backend
+    app: backend
   ports:
-    - protocol : TCP
-      port : 8080
+    - protocol: TCP
+      port: 8080
       targetPort: 8080
 
 ---
@@ -40,7 +40,7 @@ spec:
     spec:
       containers:
       - name: studnet-backend
-        image: zcha1307/studnet-backend:1.2.4
+        image: zcha1307/studnet-backend:1.2.5
         ports:
         - containerPort: 8080
         env:
