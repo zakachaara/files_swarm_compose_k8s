@@ -28,7 +28,35 @@ spec:
     spec:
       containers:
       - name: studnet-frontend
-        image: zcha1307/studnet-frontend:1.2.3
+        image: zcha1307/studnet-frontend:1.2.4
+        resources:
+          limits:
+            cpu: "0.2"
+            memory: 1000Mi
+          requests:
+            cpu: "0.1"
+            memory: 500Mi
         ports:
         - containerPort: 80
           name: http-port
+        livenessProbe:
+          exec:
+            command:
+            - cat
+            - /tmp/healthy
+          initialDelaySeconds: 3
+          periodSeconds: 5
+        readinessProbe:
+          exec:
+            command:
+            - cat
+            - /tmp/healthy
+          initialDelaySeconds: 3
+          periodSeconds: 5
+        startupProbe:
+          exec:
+            command:
+            - touch
+            - /tmp/healthy
+          failureThreshold: 30
+          periodSeconds: 5

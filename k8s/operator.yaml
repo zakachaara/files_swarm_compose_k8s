@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mypasswords
+type: Opaque
+data:
+  rootUser: cm9vdAo= # root
+  rootHost: JQ==     # % 
+  rootPassword: Y205dmRBbz0K # cm9vdAo= == root en base64

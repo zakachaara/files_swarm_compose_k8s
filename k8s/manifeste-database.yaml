@@ -50,8 +50,15 @@ spec:
         app: mysql
     spec:
       containers:
-      - name: MySQL-database
+      - name: mysql-database
         image: mysql:9.1.0-oracle
+        resources:
+          limits:
+            cpu: "0.2"
+            memory: 700Mi
+          requests:
+            cpu: "0.1"
+            memory: 500Mi
         env:
           - name: MYSQL_ROOT_PASSWORD
             valueFrom:
@@ -77,11 +84,33 @@ spec:
           - containerPort: 3306
             name: db-port
         volumeMounts:
-          - name: storageVol
+          - name: storagevol
             mountPath: /var/lib/mysql
+        livenessProbe:
+          exec:
+            command:
+            - cat
+            - /tmp/healthy
+          initialDelaySeconds: 3
+          periodSeconds: 5
+        readinessProbe:
+          exec:
+            command:
+            - cat
+            - /tmp/healthy
+          initialDelaySeconds: 3
+          periodSeconds: 5
+        startupProbe:
+          exec:
+            command:
+            - touch
+            - /tmp/healthy
+          failureThreshold: 30
+          periodSeconds: 5
+
   volumeClaimTemplates:
   - metadata:
-      name: storageVol
+      name: storagevol
     spec:
       accessModes: ["ReadWriteOnce"]
       resources:
